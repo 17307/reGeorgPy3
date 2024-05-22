@@ -144,7 +144,7 @@ class session(Thread):
         log.debug("SocksVersion5 detected")
         nmethods, methods = (sock.recv(1), sock.recv(1))
         sock.sendall(VER + METHOD)
-        sock.recv(1) # 这里要多读一个字节
+        # sock.recv(1) # 如果是 curl 的话，这里要多读一个字节
         ver = sock.recv(1)
         if ver == b"\x02":  # this is a hack for proxychains
             ver, cmd, rsv, atyp = (
