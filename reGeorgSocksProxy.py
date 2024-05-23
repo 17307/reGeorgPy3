@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import logging
@@ -142,9 +141,9 @@ class session(Thread):
 
     def parseSocks5(self, sock):
         log.debug("SocksVersion5 detected")
-        nmethods, methods = (sock.recv(1), sock.recv(1))
+        nmethods = sock.recv(1)
+        methods = sock.recv(int.from_bytes(nmethods, "little"))
         sock.sendall(VER + METHOD)
-        # sock.recv(1) # 如果是 curl 的话，这里要多读一个字节
         ver = sock.recv(1)
         if ver == b"\x02":  # this is a hack for proxychains
             ver, cmd, rsv, atyp = (
@@ -366,7 +365,7 @@ class session(Thread):
                 self.pSocket.send(data)
             except Exception as ex:
                 print(ex)
-                raise ex
+                break
         self.closeRemoteSession()
         log.debug("[%s:%d] Closing localsocket" % (self.target, self.port))
         try:
@@ -424,7 +423,7 @@ class session(Thread):
             except timeout:
                 continue
             except Exception as ex:
-                raise ex
+                print(ex)
                 break
         self.closeRemoteSession()
         log.debug("Closing localsocket")
